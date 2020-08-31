@@ -1,5 +1,3 @@
-#!/usr/bin/env ts-node 
-
 // Libraries
 import * as json2csv from 'json2csv';
 import path from 'path';
