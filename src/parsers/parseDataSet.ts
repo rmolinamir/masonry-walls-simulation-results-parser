@@ -112,8 +112,8 @@ export function parseDataSet(
       (stressStrainData) => stressStrainData.FmStrain,
     );
     if (
-      stressStrainJson[index].FmStrain < crushingStrainBreakpoint &&
-      index !== stressStrainJson.length - 1
+      sortedStressStrainJson[index].FmStrain < crushingStrainBreakpoint &&
+      index !== sortedStressStrainJson.length - 1
     ) {
       index += 1;
     }
