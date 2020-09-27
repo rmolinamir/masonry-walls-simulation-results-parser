@@ -27,6 +27,9 @@ export function approximateBinarySearch<T = number>(
   // - While the left pointer comes before the right pointer.
   while(elementAdapter(arr[middle]) !== targetValue && start <= end) {
     // - If the value is too large, move the right pointer down closer to the left.
+    console.log('targetValue: ', targetValue);
+    console.log('middle: ', middle);
+    console.log('elementAdapter(arr[middle]): ', elementAdapter(arr[middle]));
     if(targetValue < elementAdapter(arr[middle])){
       end = middle - 1;
     // - If the value is too small, move the left pointer up closer to the right.

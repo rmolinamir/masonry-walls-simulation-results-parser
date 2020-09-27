@@ -92,6 +92,9 @@ export function parseDataSet(
 
   let index: number;
 
+  // Sorting the stress strain list for the binary search:
+  stressStrainJson.sort((a, b) => a.FmStrain - b.FmStrain);
+
   const maxVar1StressStrainSet = stressStrainJson.reduce<{ set: ParsedStresStrainSheet, index: number }>(
     (maxParsedStresStrain, parsedStresStrain, index) => {
       if (parsedStresStrain.Var1 > maxParsedStresStrain.set.Var1) {
@@ -108,7 +111,10 @@ export function parseDataSet(
       crushingStrainBreakpoint,
       (stressStrainData) => stressStrainData.FmStrain,
     );
-    if (stressStrainJson[index].FmStrain < crushingStrainBreakpoint) {
+    if (
+      stressStrainJson[index].FmStrain < crushingStrainBreakpoint &&
+      index !== stressStrainJson.length - 1
+    ) {
       index += 1;
     }
   } else {
