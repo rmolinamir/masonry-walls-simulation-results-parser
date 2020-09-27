@@ -78,18 +78,31 @@ export function parseDataSet(
     throw new Error(`The amount of valid entries between the sheets are not the same.`);
   }
 
-  const highestStrainFm = stressStrainJson[stressStrainJson.length - 1].FmStrain;
+  /**
+   * 1. Find the maximum value of Var1 (displacement increment) and its set.
+   * 2. If the crushing strain of the set is GTE than the crushing strain breakpoint:
+   *    2.1. Find the closest value to the breakpoint.
+   *    2.2. The closest value is either slightly below or slightly above the crushing strain
+   *         breakpoint, but we only want values above it. For this reason, if it's below, add one
+   *         to the index value and get the most approximate value GREATER than the crushing strain
+   *         breakpoint.
+   *    2.3. Get the values from set above the crushing strain breakpoint closest to it.
+   * 3. Otherwise, get the values from the set of the maximum value of Var1.
+   */
 
   let index: number;
 
-  // If the highest strain is GTE to the crushing strain breakpoint, find the closest value
-  // to the breakpoint.
-  // Otherwise, use the highest strain.
-  if (highestStrainFm > crushingStrainBreakpoint) {
-    // The closest value is either slightly below or slightly above the crushing strain
-    // breakpoint, but we only want values above it. For this reason, if it's below, add one
-    // to the index value and get the most approximate value GREATER than the crushing strain
-    // breakpoint.
+  const maxVar1StressStrainSet = stressStrainJson.reduce<{ set: ParsedStresStrainSheet, index: number }>(
+    (maxParsedStresStrain, parsedStresStrain, index) => {
+      if (parsedStresStrain.Var1 > maxParsedStresStrain.set.Var1) {
+        return { set: parsedStresStrain, index };
+      }
+      return maxParsedStresStrain;
+    },
+    { set: stressStrainJson[0], index: 0 },
+  );
+
+  if (maxVar1StressStrainSet.set.FmStrain > crushingStrainBreakpoint) {
     index = approximateBinarySearch<ParsedStresStrainSheet>(
       stressStrainJson,
       crushingStrainBreakpoint,
@@ -99,7 +112,7 @@ export function parseDataSet(
       index += 1;
     }
   } else {
-    index = stressStrainJson.length - 1;
+    index = maxVar1StressStrainSet.index;
   }
 
   const pushOverData = pushOverJson[index];

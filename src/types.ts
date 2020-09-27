@@ -24,7 +24,6 @@ export interface ParsedStresStrainSheet {
   FmStress: number;
   FyStress: number;
   FyStrain: number;
-
 }
 
 export interface ParsedMomentInfoSheet {
